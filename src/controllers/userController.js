@@ -154,15 +154,15 @@ export const postEdit = async (req, res) => {
   const pageTitle = "Edit Profile";
   const {
     session: {
-      user: { _id },
+      user: { _id, avatarUrl },
     },
     body: { name, email, username, location },
+    file,
   } = req;
   // const _id = req.session.user._id;
   // const = { name, email, username, location } = req.body;
 
   const currentUser = req.session.user;
-  console.log(currentUser);
   //현재 로그인 되어있는 user의 username 과 폼에 입력한 username 이 다른데 db에 존재하는 경우 error.
   if (currentUser.username != username && (await User.exists({ email }))) {
     return res.status(400).render("edit-profile", {
@@ -180,6 +180,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
+      avatarUrl: file ? file.path : avatarUrl, // file이 존재한다면 file.path 가 있다.
       name,
       email,
       username,
@@ -193,5 +194,40 @@ export const postEdit = async (req, res) => {
 export const logout = (req, res) => {
   req.session.destroy();
   return res.redirect("/");
+};
+
+export const getChangePassword = (req, res) => {
+  if (req.session.user.socialOnly) {
+    return res.redirect("/");
+  }
+  return res.render("users/change-password", { pageTitle: "Change Password" });
+};
+export const postChangePassword = async (req, res) => {
+  // send notification (비번 바꿨네!)
+  const {
+    session: {
+      user: { _id },
+    },
+    body: { oldPassword, newPassword, newPasswordConfirmation },
+  } = req;
+  if (newPassword !== newPasswordConfirmation) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The new password does not match the confirmation",
+    });
+  }
+  // 기존 비밀번호가 정확한지 확인
+  const user = await User.findById(_id);
+  const ok = await bcrypt.compare(oldPassword, user.password);
+  if (!ok) {
+    return res.status(400).render("users/change-password", {
+      pageTitle: "Change Password",
+      errorMessage: "The current password is incorrect",
+    });
+  }
+  // 비밀번호 변경
+  user.password = newPassword;
+  await user.save(); // pre save middleware 적용된다.
+  return res.redirect("/users/logout");
 };
 export const see = (req, res) => res.send("See User");

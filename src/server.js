@@ -26,6 +26,7 @@ app.use(
 
 //localsMiddleware 가 session middleware 다음에 와야 session object 에 접근 가능
 app.use(localsMiddleware);
+app.use("/uploads", express.static("uploads"));
 app.use("/", rootRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
