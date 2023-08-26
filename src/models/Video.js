@@ -8,8 +8,9 @@ const videoSchema = new mongoose.Schema({
   hashtags: [{ type: String, trim: true }],
   meta: {
     views: { type: Number, default: 0, required: true },
-    rating: { type: Number, default: 0, required: true },
   },
+  owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+  // ref -> mongoose에게 owner에 id를 저장하겠다고 알려주기 위함.
 });
 
 //이 function 은 이제 Video에 포함되어 있다!

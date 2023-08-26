@@ -26,7 +26,8 @@ app.use(
 
 //localsMiddleware 가 session middleware 다음에 와야 session object 에 접근 가능
 app.use(localsMiddleware);
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("uploads")); //정적 파일 설정 (express한테 사람들이 이 폴더 안에 있는 파일들을 볼 수 있게 해달라고 요청하는 것. )
+app.use("/static", express.static("assets"));
 app.use("/", rootRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
