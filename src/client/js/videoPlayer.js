@@ -7,7 +7,10 @@ const totalTime = document.getElementById("totalTime");
 const timeline = document.getElementById("timeline");
 const fullScreenBtn = document.getElementById("fullScreen");
 const videoContainer = document.getElementById("videoContainer");
+const videoControls = document.getElementById("videoControls");
 
+let controlsTimeout = null;
+let controlsMovementTimeout = null;
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
@@ -92,6 +95,26 @@ const handleFullScreen = () => {
   }
 };
 
+const hideControls = () => videoControls.classList.remove("showing");
+
+const handleMouseMove = () => {
+  if (controlsTimeout) {
+    clearTimeout(controlsTimeout); //마우스가 움직일때마다 timeout을 취소한다.
+    controlsTimeout = null;
+  }
+  if (controlsMovementTimeout) {
+    clearTimeout(controlsMovementTimeout); //마우스가 움직일때마다 timeout을 취소한다.
+    controlsMovementTimeout = null;
+  }
+  videoControls.classList.add("showing");
+  controlsMovementTimeout = setTimeout(hideControls, 3000); //마우스를 움직일때마다 timeout을 만든다. 3초 뒤에 showing 클래스가 사라지도록.
+};
+
+// 마우스가 비디오 밖으로 나오면 컨트롤바가 3초 뒤에 사라지게 한다.
+const handleMouseLeave = () => {
+  controlsTimeout = setTimeout(hideControls, 3000);
+};
+
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 volumeRange.addEventListener("input", handleVolumeChange);
@@ -100,6 +123,8 @@ video.addEventListener("loadedmetadata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 timeline.addEventListener("input", handleTimelineChange);
 fullScreenBtn.addEventListener("click", handleFullScreen);
+video.addEventListener("mousemove", handleMouseMove);
+video.addEventListener("mouseleave", handleMouseLeave);
 
 video.readyState
   ? handleLoadedMetadata()
