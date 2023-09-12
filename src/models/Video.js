@@ -3,12 +3,14 @@ import mongoose from "mongoose";
 const videoSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true, maxLength: 80 },
   fileUrl: { type: String, required: true },
-  description: { type: String, required: true, trim: true, minLength: 20 },
+  thumbUrl: { type: String },
+  description: { type: String, required: true, trim: true, minLength: 10 },
   createdAt: { type: Date, required: true, default: Date.now },
   hashtags: [{ type: String, trim: true }],
   meta: {
     views: { type: Number, default: 0, required: true },
   },
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   owner: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
   // ref -> mongoose에게 owner에 id를 저장하겠다고 알려주기 위함.
 });

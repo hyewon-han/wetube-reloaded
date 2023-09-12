@@ -194,12 +194,16 @@ export const postEdit = async (req, res) => {
   return res.redirect("/users/edit");
 };
 export const logout = (req, res) => {
-  req.session.destroy();
+  req.session.user = null;
+  res.locals.loggedInUser = req.session.user;
+  req.session.loggedIn = false;
+  req.flash("info", "Bye Bye");
   return res.redirect("/");
 };
 
 export const getChangePassword = (req, res) => {
   if (req.session.user.socialOnly) {
+    req.flash("info", "Can't change password.");
     return res.redirect("/");
   }
   return res.render("users/change-password", { pageTitle: "Change Password" });
@@ -230,6 +234,7 @@ export const postChangePassword = async (req, res) => {
   // 비밀번호 변경
   user.password = newPassword;
   await user.save(); // pre save middleware 적용된다.
+  req.flash("info", "Password updated");
   return res.redirect("/users/logout");
 };
 export const see = async (req, res) => {
