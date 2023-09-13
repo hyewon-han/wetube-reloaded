@@ -18,7 +18,10 @@
     }
   }
 }
-
+.video__comments-form {
+  display: flex !important;
+  flex-direction: row !important;
+}
 .video__comments {
   display: flex;
   flex-direction: column;

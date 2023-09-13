@@ -182,7 +182,7 @@ export const postEdit = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(
     _id,
     {
-      avatarUrl: file ? file.path : avatarUrl, // file이 존재한다면 file.path 가 있다.
+      avatarUrl: file ? file.location : avatarUrl, // file이 존재한다면 file.path 가 있다.
       name,
       email,
       username,
